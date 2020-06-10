@@ -704,6 +704,18 @@ CompositeCollider2D:
         Y: -49999900
       - X: -20000000
         Y: -10000000
+      - X: -39999900
+        Y: -10000000
+      - X: -39999900
+        Y: -10000041
+      - X: -39999959
+        Y: -10000100
+      - X: -50000041
+        Y: -10000100
+      - X: -50000100
+        Y: -10000041
+      - X: -50000100
+        Y: -10000000
       - X: -99999900
         Y: -10000000
       - X: -99999900
@@ -884,12 +896,12 @@ PlatformEffector2D:
     serializedVersion: 2
     m_Bits: 4294967295
   m_RotationalOffset: 0
-  m_UseOneWay: 1
+  m_UseOneWay: 0
   m_UseOneWayGrouping: 0
   m_SurfaceArc: 180
   m_UseSideFriction: 0
   m_UseSideBounce: 0
-  m_SideArc: 1
+  m_SideArc: 0
 --- !u!1 &457153421
 GameObject:
   m_ObjectHideFlags: 0
@@ -1016,7 +1028,7 @@ Rigidbody2D:
   m_LinearDrag: 0
   m_AngularDrag: 0.05
   m_GravityScale: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 090fe25cf58039d4bbedc73926f5dbea, type: 2}
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
@@ -1033,9 +1045,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65283622e9aaeef4885d2391400e1730, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 5
-  jumpForce: 10
-  jumpDecay: 1
+  maxMoveSpeed: 6
+  maxFallSpeed: 8
+  moveAcceleration: 15
+  fallAcceleration: 15
+  maxJumpHeight: 3.2
+  jumpCancelFactor: 5
 --- !u!1 &519420028
 GameObject:
   m_ObjectHideFlags: 0
