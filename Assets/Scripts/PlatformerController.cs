@@ -1,13 +1,13 @@
-﻿using System.Collections;
+﻿/* 
+    Mario-style platformer player movement controller by Jaden Balogh.
+*/
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class PlatformerController : MonoBehaviour
 {
-    /* 
-        Mario-style platformer player movement controller by Jaden Balogh.
-    */
-
     [Tooltip("The maximum horizontal speed of the player.")]
     public float maxMoveSpeed = 6f;
     [Tooltip("The maximum downwards falling speed of the player.")]
@@ -44,7 +44,7 @@ public class PlatformerController : MonoBehaviour
             isGrounded = false;
             rb2D.AddForce(jumpForce * Vector2.up, ForceMode2D.Impulse);
         } else if (Input.GetButtonUp("Jump")) {
-            // If the spacebar is released early, trigger the jump cancel
+            // If the spacebar is released early, cancel the jump
             isJumpKeyHeld = false;
         }
     }
