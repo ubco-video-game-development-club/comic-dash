@@ -14,8 +14,8 @@ public class PlatformerController : MonoBehaviour
     public float maxMoveSpeed = 8f;
     [Tooltip("The horizontal drag slowing the player over time.")]
     public float horizontalDrag = 8f;
-    [Tooltip("The horizontal drag slowing the player over time.")]
-    public float horizontalStopThreshold = 0.01f;
+    [Tooltip("The horizontal velocity threshold below which the velocity will be clamped to 0.")]
+    public float horizontalStopThreshold = 0.3f;
     [Tooltip("The strength of the constant downwards acceleration (gravity) on the player. NOTE: This controller overrides normal physics gravity on the player.")]
     public float fallAcceleration = 15f;
     [Tooltip("The maximum downwards falling speed of the player.")]
@@ -71,16 +71,17 @@ public class PlatformerController : MonoBehaviour
         moveForce = isBlocked ? Mathf.Max(0, moveForce) : moveForce;
         rb2D.AddForce(moveForce * Vector2.right);
 
-        // Apply horizontal drag when no force is applied
-        float xDir = rb2D.velocity.normalized.x;
-        if (Mathf.Abs(xDir) > 0) {
-            rb2D.AddForce(horizontalDrag * -xDir * Vector2.right);
+        // Set the player's horizontal velocity to 0 if it goes below the threshold
+        float xMag = Mathf.Abs(rb2D.velocity.x);
+        if (moveForce == 0 && xMag <= horizontalStopThreshold) {
+            rb2D.velocity = new Vector2(0, rb2D.velocity.y);
         }
 
-        // Set the player's horizontal velocity to 0 if it goes below the threshold
-        // if (rb2D.velocity.x < horizontalStopThreshold) {
-        //     rb2D.velocity = rb2D.velocity.y * Vector2.up;
-        // }
+        // Apply horizontal drag opposite movement direction
+        if (xMag > horizontalStopThreshold) {
+            float xDir = Mathf.Sign(rb2D.velocity.x);
+            rb2D.AddForce(horizontalDrag * -xDir * Vector2.right);
+        }
 
         // Apply jump cancel force if spacebar is released early
         if (rb2D.velocity.y > 0.1f && !isJumpKeyHeld) {

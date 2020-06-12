@@ -1836,6 +1836,7 @@ MonoBehaviour:
   moveAcceleration: 15
   maxMoveSpeed: 8
   horizontalDrag: 8
+  horizontalStopThreshold: 0.3
   fallAcceleration: 15
   maxFallSpeed: 8
   maxJumpHeight: 3.2
