@@ -11,9 +11,11 @@ public class PlatformerController : MonoBehaviour
     [Tooltip("The strength of the player's horizontal acceleration using the arrow keys.")]
     public float moveAcceleration = 15f;
     [Tooltip("The maximum horizontal speed of the player.")]
-    public float maxMoveSpeed = 6f;
+    public float maxMoveSpeed = 8f;
     [Tooltip("The horizontal drag slowing the player over time.")]
-    public float horizontalDrag = 1f;
+    public float horizontalDrag = 8f;
+    [Tooltip("The horizontal drag slowing the player over time.")]
+    public float horizontalStopThreshold = 0.01f;
     [Tooltip("The strength of the constant downwards acceleration (gravity) on the player. NOTE: This controller overrides normal physics gravity on the player.")]
     public float fallAcceleration = 15f;
     [Tooltip("The maximum downwards falling speed of the player.")]
@@ -74,6 +76,11 @@ public class PlatformerController : MonoBehaviour
         if (Mathf.Abs(xDir) > 0) {
             rb2D.AddForce(horizontalDrag * -xDir * Vector2.right);
         }
+
+        // Set the player's horizontal velocity to 0 if it goes below the threshold
+        // if (rb2D.velocity.x < horizontalStopThreshold) {
+        //     rb2D.velocity = rb2D.velocity.y * Vector2.up;
+        // }
 
         // Apply jump cancel force if spacebar is released early
         if (rb2D.velocity.y > 0.1f && !isJumpKeyHeld) {
