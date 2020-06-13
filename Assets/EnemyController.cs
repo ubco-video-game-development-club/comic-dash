@@ -9,6 +9,7 @@ public class EnemyController : MonoBehaviour
     public float moveSpeed = 1.5f;
     public float deathBounceHeight = 1f;
 
+    private float bottomBound;
     private Vector2 moveDirection;
     private Rigidbody2D rb2D;
 
@@ -17,7 +18,16 @@ public class EnemyController : MonoBehaviour
     }
 
     void Start() {
+        float yOffset = GetComponent<BoxCollider2D>().size.y / 2;
+        bottomBound = Camera.main.ScreenToWorldPoint(Vector2.zero).y - yOffset;
+
         moveDirection = startDirection;
+    }
+
+    void Update() {
+        if (transform.position.y < bottomBound) {
+            Die();
+        }
     }
 
     void FixedUpdate() {
