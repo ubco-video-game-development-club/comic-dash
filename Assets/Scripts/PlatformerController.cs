@@ -4,6 +4,7 @@
 
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D))]
 public class PlatformerController : MonoBehaviour
 {
     [Tooltip("Can the player move past the left-hand side of the screen?")]
@@ -25,25 +26,34 @@ public class PlatformerController : MonoBehaviour
     [Tooltip("Multiplies the strength of the downwards counter-force applied to the player if they cancel a jump early by releasing the spacebar.")]
     public float jumpCancelFactor = 5f;
 
+    private bool isEnabled = true;
     private float jumpForce = 1f;
     private bool isJumpKeyHeld = false;
     private bool isGrounded = true;
     private float xOffset = 0.5f;
     private Rigidbody2D rb2D;
+    private BoxCollider2D bc2D;
 
     void Awake() {
         rb2D = GetComponent<Rigidbody2D>();
-        xOffset = GetComponent<BoxCollider2D>().size.x / 2;
+        bc2D = GetComponent<BoxCollider2D>();
     }
 
     void Start() {
         // Turn off gravity from other physics sources
         rb2D.gravityScale = 0;
+        // Calculate half the collider size for use in distance checks
+        xOffset = bc2D.size.x / 2;
         // Calculate the jump force required to reach the max jump height
-        jumpForce = Mathf.Sqrt(2 * fallAcceleration * maxJumpHeight);
+        jumpForce = CalculateJumpForce(maxJumpHeight);
     }
 
     void Update() {
+        // Do not run if the controller is disabled
+        if (!isEnabled) {
+            return;
+        }
+
         if (Input.GetButtonDown("Jump") && isGrounded) {
             // Jump if the player presses spacebar while on the ground
             isJumpKeyHeld = true;
@@ -56,6 +66,11 @@ public class PlatformerController : MonoBehaviour
     }
 
     void FixedUpdate() {
+        // Do not run if the controller is disabled
+        if (!isEnabled) {
+            return;
+        }
+
         // Determine if the player is at the left bound and backtracking is disabled
         float leftBound = Camera.main.ScreenToWorldPoint(Vector2.zero).x + xOffset;
         bool isBlocked = !allowBacktracking && transform.position.x <= leftBound;
@@ -118,5 +133,23 @@ public class PlatformerController : MonoBehaviour
     void OnCollisionExit2D(Collision2D col) {
         // you are no longer grounded
         isGrounded = false;
+    }
+
+    ///<summary>Disables all user input and cancels current velocity.</summary>
+    public void Disable() {
+        isEnabled = false;
+        rb2D.velocity = Vector2.zero;
+        bc2D.isTrigger = true;
+    }
+
+    ///<summary>Causes the player to bounce to a given height.</summary>
+    public void Bounce(float bounceHeight) {
+        float bounceForce = CalculateJumpForce(bounceHeight);
+        rb2D.AddForce(bounceForce * Vector2.up, ForceMode2D.Impulse);
+    }
+
+    ///<summary>Returns the force required to jump a given height based on the current gravity settings.</summary>
+    private float CalculateJumpForce(float jumpHeight) {
+        return Mathf.Sqrt(2 * fallAcceleration * jumpHeight);
     }
 }
