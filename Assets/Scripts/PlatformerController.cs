@@ -25,6 +25,8 @@ public class PlatformerController : MonoBehaviour
     public float maxJumpHeight = 3.2f;
     [Tooltip("Multiplies the strength of the downwards counter-force applied to the player if they cancel a jump early by releasing the spacebar.")]
     public float jumpCancelFactor = 5f;
+    [Tooltip("The vertical velocity threshold above which the player is considered to be jumping.")]
+    public float jumpVelocityThreshold = 0.1f;
 
     private bool isEnabled = true;
     private float jumpForce = 1f;
@@ -86,25 +88,20 @@ public class PlatformerController : MonoBehaviour
         moveForce = isBlocked ? Mathf.Max(0, moveForce) : moveForce;
         rb2D.AddForce(moveForce * Vector2.right);
 
-        // Set the player's horizontal velocity to 0 if it goes below the threshold
-        float xMag = Mathf.Abs(rb2D.velocity.x);
-        if (moveForce == 0 && xMag <= horizontalStopThreshold) {
-            rb2D.velocity = new Vector2(0, rb2D.velocity.y);
-        }
-
         // Apply horizontal drag opposite movement direction
+        float xMag = Mathf.Abs(rb2D.velocity.x);
         if (xMag > horizontalStopThreshold) {
             float xDir = Mathf.Sign(rb2D.velocity.x);
             rb2D.AddForce(horizontalDrag * -xDir * Vector2.right);
         }
 
         // Apply jump cancel force if spacebar is released early
-        if (rb2D.velocity.y > 0.1f && !isJumpKeyHeld) {
+        if (rb2D.velocity.y > jumpVelocityThreshold && !isJumpKeyHeld) {
             rb2D.AddForce(-jumpForce * jumpCancelFactor * Vector2.up);
         }
 
         // Apply reverse jump force when falling
-        if (rb2D.velocity.y < -0.1f) {
+        if (rb2D.velocity.y < -jumpVelocityThreshold) {
             rb2D.AddForce(-jumpForce * Vector2.up);
         }
 
@@ -115,6 +112,11 @@ public class PlatformerController : MonoBehaviour
         Vector2 velocityX = Mathf.Clamp(rb2D.velocity.x, -maxMoveSpeed, maxMoveSpeed) * Vector2.right;
         Vector2 velocityY = Mathf.Max(rb2D.velocity.y, -maxFallSpeed) * Vector2.up;
         rb2D.velocity = velocityX + velocityY;
+
+        // Set the player's horizontal velocity to 0 if it goes below the threshold
+        if (moveForce == 0 && xMag <= horizontalStopThreshold) {
+            rb2D.velocity = new Vector2(0, rb2D.velocity.y);
+        }
     }
 
     void OnCollisionStay2D(Collision2D col) {
@@ -146,6 +148,28 @@ public class PlatformerController : MonoBehaviour
     public void Bounce(float bounceHeight) {
         float bounceForce = CalculateJumpForce(bounceHeight);
         rb2D.AddForce(bounceForce * Vector2.up, ForceMode2D.Impulse);
+    }
+
+    public bool IsMoving() {
+        return Mathf.Abs(rb2D.velocity.x) > horizontalStopThreshold;
+    }
+
+    public bool IsJumping() {
+        return rb2D.velocity.y > jumpVelocityThreshold;
+    }
+
+    public bool IsFalling() {
+        return rb2D.velocity.y < -jumpVelocityThreshold;
+    }
+
+    public int GetDirection() {
+        if (rb2D.velocity.x > horizontalStopThreshold) {
+            return 1;
+        } else if (rb2D.velocity.x < -horizontalStopThreshold) {
+            return -1;
+        } else {
+            return 0;
+        }
     }
 
     ///<summary>Returns the force required to jump a given height based on the current gravity settings.</summary>

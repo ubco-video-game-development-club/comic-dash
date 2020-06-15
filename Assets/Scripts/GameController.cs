@@ -35,12 +35,14 @@ public class GameController : MonoBehaviour
 
     public void RestartGame() {
         SceneManager.LoadScene(startSceneName);
-        SetLives(totalLives);
+        SetScore(0);
         SetTime(startTime);
+        SetLives(totalLives);
     }
 
     public void RestartLevel() {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        SetScore(0);
         SetTime(startTime);
     }
 
@@ -55,7 +57,7 @@ public class GameController : MonoBehaviour
 
     public void SetScore(int score) {
         this.score = score;
-        HUD.instance.SetLives(this.score);
+        HUD.instance.SetScore(this.score);
     }
 
     public void SetTime(int time) {

@@ -8,6 +8,7 @@ public class EnemyController : MonoBehaviour
     private Vector2 startDirection = Vector2.right;
     public float moveSpeed = 1.5f;
     public float deathBounceHeight = 1f;
+    public int deathScore = 100;
 
     private float bottomBound;
     private Vector2 moveDirection;
@@ -39,6 +40,7 @@ public class EnemyController : MonoBehaviour
         if (col.gameObject.TryGetComponent<Player>(out player)) {
             if (Vector2.Dot(col.GetContact(0).normal, Vector2.up) == -1) {
                 player.GetController().Bounce(deathBounceHeight);
+                GameController.instance.AddScore(deathScore);
                 Die();
             } else {
                 player.Die();

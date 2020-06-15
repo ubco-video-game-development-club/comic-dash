@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(PlatformerController))]
+[RequireComponent(typeof(PlatformerController), typeof(SpriteRenderer), typeof(Animator))]
 public class Player : MonoBehaviour
 {
     private float bottomBound;
     private PlatformerController platformerController;
+    private SpriteRenderer spriteRenderer;
+    private Animator animator;
 
     void Awake() {
         platformerController = GetComponent<PlatformerController>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        animator = GetComponent<Animator>();
     }
 
     void Start() {
@@ -20,6 +24,15 @@ public class Player : MonoBehaviour
     void Update() {
         if (transform.position.y < bottomBound) {
             Die();
+        }
+
+        animator.SetBool("IsMoving", platformerController.IsMoving());
+        animator.SetBool("IsJumping", platformerController.IsJumping());
+        animator.SetBool("IsFalling", platformerController.IsFalling());
+
+        int xDir = platformerController.GetDirection();
+        if (xDir != 0) {
+            spriteRenderer.flipX = xDir < 0;
         }
     }
 
