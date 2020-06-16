@@ -27,6 +27,8 @@ public class PlatformerController : MonoBehaviour
     public float jumpCancelFactor = 5f;
     [Tooltip("The vertical velocity threshold above which the player is considered to be jumping.")]
     public float jumpVelocityThreshold = 0.1f;
+    [Tooltip("The vertical velocity threshold above which the player is considered to be falling.")]
+    public float fallVelocityThreshold = -0.3f;
 
     private bool isEnabled = true;
     private float jumpForce = 1f;
@@ -159,7 +161,7 @@ public class PlatformerController : MonoBehaviour
     }
 
     public bool IsFalling() {
-        return rb2D.velocity.y < -jumpVelocityThreshold;
+        return rb2D.velocity.y < fallVelocityThreshold;
     }
 
     public int GetDirection() {
